@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
 
-image = cv2.imread('woman-playing-a-guitar-simon-vouet.jpg')
+image = cv2.imread('DP-19709-001.jpg')
 
-x_min, y_min, x_max, y_max = 913,778,1457,1512
+x_min, y_min, x_max, y_max = 80,1098,1724,3682 
 cropped_image = image[y_min:y_max, x_min:x_max]
 color = (0, 255, 0)
 thickness = 2
