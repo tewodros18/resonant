@@ -1,47 +1,49 @@
 import asyncio
 import json
-
-from fastapi import FastAPI
+import os
+from fastapi.responses import JSONResponse
+from fastapi import FastAPI, HTTPException, Path
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sse_starlette.sse import EventSourceResponse
 
-from .sensor import SensorData
 
 
 app = FastAPI()
-sensor = SensorData()
 
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Svelte dev server
+    allow_origins=["*"],  # Svelte dev server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get("/")
-async def root():
-    return {"message": "Welcome to the Sensor Dashboard API"}
+@app.get("/audio")
+async def serve_audio_file(directory):
+    """Serve audio files from media directory"""
+    params = directory.split('-')
+    file_path = os.path.join(f"./static/{params[0]}/{params[1]}.wav")
+    
+    print(file_path)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Audio file not found")
+    
+    return FileResponse(file_path, media_type="audio/wav")
 
-
-@app.get("/current")
-async def get_current_reading():
-    """Get the current sensor reading."""
-    return sensor.generate_reading()
-
-
-@app.get("/stream")
-async def stream_data():
-    """Stream sensor data using server-sent events."""
-    async def event_generator():
-        while True:
-            data = sensor.generate_reading()
-            yield {
-                "event": "sensor_update",
-                "data": json.dumps(data)
-            }
-            await asyncio.sleep(2)  # Update every 2 seconds
-
-    return EventSourceResponse(event_generator())
+@app.get("/images")
+async def get_images():
+    names_list = []
+    painting_names = []
+    for file in os.listdir("./static/"):
+        path = os.path.join(f"./static/{file}/{file}.json")
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            if "artistDisplayName" in data and isinstance(data["artistDisplayName"], str):
+                names_list.append(data["artistDisplayName"])
+            if "title" in data and isinstance(data["title"], str):
+                painting_names.append(data["title"])
+    
+    return JSONResponse(content={"names": names_list, "painting_names": painting_names})

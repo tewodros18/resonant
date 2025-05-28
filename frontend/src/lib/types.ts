@@ -4,3 +4,4 @@ export interface SensorReading {
   humidity: number;
   status: 'normal' | 'warning' | 'critical';
 }
+

@@ -13,12 +13,10 @@ For each piece of content, you will:
     - talk about the legacy and impact of the work, influence of the work , enduring themes
 5. Generate outro:
     - summerize and tease and ending for the work as an ending for the lesson
-6. Generate objects:
-    - generate a list of one word objects that is going to be used as input for a vision model to draw bounding box
-    - use generic names, such as man, woman, sword
 
 ## Guidelines
     - sections should be fleshed out and more than a few sentences
+    - don't include brackets and parentheses 
 ## Response Format
 Respond in JSON format with the following structure:
 ```json
@@ -28,6 +26,5 @@ Respond in JSON format with the following structure:
     "section 2": "Generate section two", 
     "section 3": "Generate section three",
     "outro": "summerize and tease and ending for the work as an ending for the lesson",
-    "objects": ["object1", "object2"], 
 }
 ```
